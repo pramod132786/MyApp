@@ -14,7 +14,7 @@ const UserDashboard = () => {
     <>
       <div className="user-dashboard">
         <ul className="sidebar">
-          <li><span className="text-primary fw-bolder">Parmod-App</span></li>
+          <li><span className="text-primary fw-bolder">Pramod-App</span></li>
           <li><span></span><span>Home</span></li>
           <li><span></span><span>Dashboard</span></li>
           <li><span></span><span>Users <i className="bi bi-person-hearts"></i></span></li>
