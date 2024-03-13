@@ -1,8 +1,13 @@
+// UserRegistration.js
 import React, { useState } from "react";
-import UserService from "./UserService"; 
-import "./UserRegistration.css" 
+import UserService from "./UserService";
+import "./UserRegistration.css";
 import { Link } from "react-router-dom";
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFaceSmile } from '@fortawesome/free-solid-svg-icons';
+import { SiGnuprivacyguard } from "react-icons/si";
+import Home from "./Home";
 
 
 
@@ -10,10 +15,9 @@ const UserRegistration = () => {
     const [userData, setUserData] = useState({
         userName: "",
         email: "",
+        mobile: "",
         pazz: ""
     });
-
-    const [success, setSuccess] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,76 +29,64 @@ const UserRegistration = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Entered")
         UserService.userCreate(userData)
             .then(response => {
-                if (response.status===201) {
-                    console.log("User created successfully:", response.data);
-                    // Optionally, you can redirect the user or show a success message here
-                    setSuccess("User created successfully");
+                if (response.status === 201) {
+                    toast.success("User created successfully");
+                    setUserData({
+                        userName: "",
+                        email: "",
+                        mobile: "",
+                        pazz: ""
+                    });
                 }
-
             })
             .catch(error => {
-                setSuccess("");
-                console.error("Error creating user:", error);
-                // Optionally, you can show an error message to the user
+                toast.error("Error creating user");
             });
     };
 
     return (
-        <div className="container h-100 mt-1">
-            <div className="d-flex justify-content-end">
-                <Link to={"/"}><button className="btn btn-secondary"><i class="bi bi-backspace"></i></button></Link>
-            </div>
-            <div className="row align-items-center justify-content-center h-100 mt-5">
-                <div className="col-md-5 col-sm-6">
-                    <div className="card rounded-4 shadow">
-                        <div className="card-body">
-                            <h3 className="card-title text-center">User Registration</h3>
-                            {success && (
-                                <p className="text-success text-center fs-5 fw-semibold">{success}</p>
-                            )}
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-group mb-3">
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Enter Username"
-                                        name="userName"
-                                        value={userData.userName}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group mb-3">
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        placeholder="Enter Email"
-                                        name="email"
-                                        value={userData.email}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group mb-4">
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        placeholder="Enter Password"
-                                        name="pazz"
-                                        value={userData.pazz}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="d-flex justify-content-center">
-                                    <button type="submit" className="btn btn-primary col-6">Register</button>
-                                </div>
-                            </form>
+        <>
+        <Home/>
+            <div className="d-flex justify-content-center  mt-5 h-50 ">
+                <div className="form-container col-md-4 col-sm-4 mb-4">
+                    <p className="title">Sign up {""} <SiGnuprivacyguard/></p>
+                    <form className="form login-form" onSubmit={handleSubmit}>
+                        <div className="input-group login-form-group">
+                            <label htmlFor="username">Username</label>
+                            <input type="text" name="userName" id="userName" value={userData.userName} onChange={handleChange} required/>
                         </div>
+                        <div className="input-group login-form-group">
+                            <label htmlFor="email">Email</label>
+                            <input type="email" name="email" id="email" value={userData.email} onChange={handleChange} required/>
+                        </div>
+                        <div className="input-group login-form-group">
+                            <label htmlFor="mobile">Mobile</label>
+                            <input type="text" name="mobile" id="mobile" value={userData.mobile} onChange={handleChange} required/>
+                        </div>
+                        <div className="input-group login-form-group mb-2">
+                            <label htmlFor="password">Password</label>
+                            <input type="password" name="pazz" id="pazz" value={userData.pazz} onChange={handleChange} required/>
+                        </div>
+                        <button type="submit" className="sign">Sign up</button>
+                    </form>
+                    <div className="social-message">
+                        <div className="line" />
+                        <span className="message fs-4"><FontAwesomeIcon icon={faFaceSmile} className="fs-3" /></span>
+                        <div className="line" />
                     </div>
+                    <div className="social-icons">
+                        {/* Social icons */}
+                    </div>
+                    <p className="signup">
+                        Do you have an account?{" "}
+                        <Link to="/login">Sign in</Link>
+                    </p>
                 </div>
             </div>
-        </div>
+            <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+        </>
     );
 };
 

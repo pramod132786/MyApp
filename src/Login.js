@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import UserService from './UserService'; // Assuming you have a UserService for backend connection
-import "./Login.css"
 import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "./Login.css"
+import { IoMdLogIn } from "react-icons/io";
+import Home from './Home';
 
 const Login = () => {
-  // State to manage form inputs
   const [formData, setFormData] = useState({
     email: '',
     pazz: ''
   });
   const navigate = useNavigate();
 
-  // State to manage error messages
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
     try {
       // Call UserService to authenticate user
       const response = await UserService.userLogin(formData);
@@ -25,18 +26,27 @@ const Login = () => {
       if (response.status === 200) {
         console.log('Login successful:', response.data);
         const res = response.data;
+        setFormData({
+          email: '',
+          pazz: ''
+        })
         sessionStorage.setItem("userId", res.id);
-        navigate("/dashboard",{ state : {res} });
+        toast.success("Login successful..", res.userName);
+        setTimeout(() => {
+          navigate("/dashboard", { state: { res } });
+        }, 2000);
       }
-
     } catch (error) {
       // Handle login error
-      setError('Invalid username or password');
+      setFormData({
+        email: '',
+        pazz: ''
+      })
       console.error('Login error:', error);
+      toast.error("Invalid username or password");
     }
   };
 
-  // Function to handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -45,50 +55,69 @@ const Login = () => {
     }));
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevState => !prevState);
+  };
+
   return (
     <>
-      <div className='user-login-form'>
-
-
-        <div className="d-flex justify-content-end mt-1 ">
-          <Link to={"/"}><button className="btn btn-secondary me-4"><i class="bi bi-backspace"></i></button></Link>
-        </div>
-        <div className="login-container">
-
-          <form className="login-form" onSubmit={handleSubmit}>
-            <h1>Welcome Back..!</h1>
-            <p>Please login to your account</p>
-            <div className="input-group">
+    <Home/>
+      <div className="d-flex justify-content-center mt-5 h-50 ">
+        <div className="form-container">
+          <p className="title">Login {""}<IoMdLogIn /></p>
+          <form className="form login-form" onSubmit={handleSubmit}>
+            <div className="input-group login-form-group">
+              <label htmlFor="username">Username / Email</label>
               <input
                 type="text"
-                id="email"
                 name="email"
-                placeholder="Email"
+                id="email"
+                placeholder="Enter your username or email"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="input-group">
+            <div className="input-group login-form-group mb-2">
+              <label htmlFor="password">Password</label>
+
               <input
-                type="password"
-                id="pazz"
+                type={showPassword ? 'text' : 'password'}
                 name="pazz"
-                placeholder="Password"
+                id="pazz"
+                placeholder="Enter your password"
                 value={formData.pazz}
                 onChange={handleChange}
                 required
               />
-            </div>
-            {error && <p className="error-message">{error}</p>}
-            <button type="submit " className='login-button rounded-5 shadow'><strong>Login</strong></button>
-            <div className="bottom-text">
-              <p>Don't have an account? <a href="/register">Sign Up</a></p>
+              <span className='password-toggle'><i
+                className={`password-toggle-icon ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}
+                onClick={togglePasswordVisibility}
+              /></span>
 
             </div>
+            <div>
+              <p className="forgot">
+                <Link to="/register">Forgot Password</Link>
+              </p>
+            </div>
+            <button className="sign">Sign in</button>
           </form>
+          <div className="social-message">
+            <div className="line" />
+            <p className="message">Login with social accounts</p>
+            <div className="line" />
+          </div>
+          <div className="social-icons">
+            {/* Social icons */}
+          </div>
+          <p className="signup">
+            Don't have an account?{" "}
+            <Link to="/register">Sign up</Link>
+          </p>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>
   );
 };

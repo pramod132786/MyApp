@@ -1,0 +1,9 @@
+.home-nav-link {
+    transition: color 0.3s, text-decoration-color 0.3s; /* Add transition effect for color change */
+}
+
+.home-nav-link:hover {
+    color: blue; /* Change text color to blue on hover */
+    text-decoration-color: orange; /* Set underline color to orange */
+    text-decoration: underline; /* Add underline on hover */
+}
